@@ -28,7 +28,7 @@ def create_app() -> Flask:
 
     def _company_name() -> str:
         """Return the company name stored in the session or a default value."""
-        return session.get("company", "Samena")
+        return session.get("company", "Smartfolio")
 
     @app.route("/")
     def login() -> str:
@@ -108,7 +108,7 @@ def create_app() -> Flask:
         """Return a placeholder response for the accounting assistant."""
         return jsonify(
             {
-                "message": "Cette fonctionnalite IA est desactivee dans la version open-source.",
+                "message": "Cette fonctionnalite IA est desactivee dans cette edition open-source de Smartfolio.",
                 "csv_data": None,
                 "is_html": False,
                 "html_content": None,
@@ -120,8 +120,8 @@ def create_app() -> Flask:
         """Return a placeholder response for the explain assistant."""
         return jsonify(
             {
-                "message": "Cette fonctionnalite IA est desactivee dans la version open-source.",
-                "explanation": "La generation automatique n'est pas disponible dans cette version de demonstration.",
+                "message": "Cette fonctionnalite IA est desactivee dans cette edition open-source de Smartfolio.",
+                "explanation": "La generation automatique n'est pas disponible dans cette edition de demonstration.",
             }
         )
 
@@ -135,7 +135,7 @@ def create_app() -> Flask:
         ]
         return jsonify(
             {
-                "message": "Exemple de questions fourni pour la version open-source.",
+                "message": "Exemple de questions fourni pour cette edition open-source de Smartfolio.",
                 "questions": sample_questions,
             }
         )

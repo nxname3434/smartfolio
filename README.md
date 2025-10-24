@@ -1,6 +1,13 @@
-# static_website
+# smartfolio
 
-Version open-source allegee de l'interface Samena. Le projet contient le frontend complet (gabarits HTML, CSS, JS) et un backend Flask minimal qui sert uniquement les pages et fournit des reponses factices pour garder la navigation fonctionnelle.
+Smartfolio est un SaaS qui automatise la creation de CV numeriques personnalises pour les developpeurs et les etudiants en informatique. Ce depot open-source propose la vitrine web historique ainsi qu'un backend Flask minimal permettant de parcourir l'interface sans connecter les services proprietaires.
+
+## Contenu
+
+- Frontend complet (gabarits HTML, CSS, JS) provenant de l'application originale.
+- Backend Flask reduit (`main.py`) avec des reponses factices afin de conserver les parcours utilisateurs.
+- Deux captures (`templates/portfolio_landing.png` et `templates/portfolio_example.png`) illustrent la page d'accueil et un exemple du produit genere.
+- TikTok: [@smartfolio.ai](https://www.tiktok.com/@smartfolio.ai)
 
 ## Demarrage rapide
 
@@ -20,4 +27,8 @@ Ensuite, ouvrez http://localhost:5000 dans votre navigateur et connectez-vous av
 - `STATIC_WEBSITE_SECRET` vous laisse definir une cle secrete Flask personnalisee (sinon valeur par defaut `change-me` utilisee).
 - Les assets se trouvent dans `static/` et les gabarits dans `templates/`.
 
-Les fonctionnalites IA et d'automatisation ont ete retirees pour eviter toute fuite de cles/API ou donnees sensibles. Vous pouvez reconnecter vos propres services en creant vos endpoints dans `main.py`.
+Les integrations IA et automations ont ete retirees pour eviter toute fuite de cles ou de donnees sensibles. Vous pouvez reconnecter vos propres services en ajoutant vos endpoints dans `main.py`.
+
+## Etat du projet
+
+La plateforme n'est plus hebergee aujourd'hui, mais la presence en ligne continue via TikTok (@smartfolio.ai). Ce depot sert de reference pour toute relance ou reutilisation future.
