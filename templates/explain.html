@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saména - Votre Assistant IA pour Entreprises</title>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"> -->
+    <style>
+
+        /* Variables CSS pour une maintenance facile */
+        :root {
+            --primary-color: #ffffff; /* Texte principal blanc */
+            --secondary-color: #bbbbbb; /* Texte secondaire gris clair */
+            --background-color: #121212; /* Fond principal très sombre */
+            --surface-color: #1e1e1e5e; /* Fond légèrement moins sombre pour les cartes, formulaires */
+            --accent-color: #007bff; /* Une couleur d'accentuation (bleu ici, à adapter) */
+            --hover-accent-color: #0056b3;
+            --error-color: #dc3545;
+            --success-color: #28a745;
+            --border-color: #333333;
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Reset et styles de base */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth; /* Défilement doux pour les ancres */
+            scroll-padding-top: 100px; /* Ajoutez cette ligne - ajustez la valeur selon vos préférences */
+
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--background-color);
+            color: var(--primary-color);
+            line-height: 1.6;
+            overflow-x: hidden; /* Empêche le scroll horizontal dû aux animations */
+        }
+
+        h1, h2, h3, h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.8em;
+            line-height: 1.2;
+        }
+        h1 { font-size: 2.5rem; }
+        h2 { font-size: 2rem; }
+        h3 { font-size: 1.75rem; }
+        h4 { font-size: 1.25rem; }
+
+
+        p {
+            color: var(--secondary-color);
+            margin-bottom: 1em;
+        }
+
+        a {
+            color: var(--accent-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: var(--hover-accent-color);
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .status-message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+        .status-error {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
+            display: block;
+        }
+        .status-success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+            display: block;
+        }
+        .status-loading {
+            background-color: #e3f2fd;
+            color: #1565c0;
+            border: 1px solid #90caf9;
+            display: block;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        
+
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            background-color: var(--surface-color);
+            padding: 0.1rem 0;
+            position: fixed; /* Barre de nav fixe */
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 2rem; /* Réduction du padding */
+        }
+
+        /* Ajuster la taille du logo si nécessaire */
+        header .logo {
+            margin: 0;
+        }
+
+        /* Assurer que la navigation est alignée verticalement */
+        header nav {
+            margin: 0;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: var(--light);
+            text-decoration: none;
+            position: relative;
+            padding: 0.5rem 0;
+            margin-top: -5px;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            transition: width 0.3s ease;
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+        
+        .logout-btn {
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logout-btn:hover {
+            background-color: var(--hover-accent-color);
+            color: var(--primary-color);
+        }
+        
+        .logout-btn i {
+            font-size: 0.9em;
+        }
+
+        .hero {
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .subtitle {
+            color: var(--secondary);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        h1 span {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        } 
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin-bottom: 2rem;
+            opacity: 0.8;
+        }
+
+        .btn {
+            display: inline-block;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: var(--light);
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(66, 192, 255, 0.2);
+        }
+
+        section {
+            padding: 5rem 0;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        } 
+
+      
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: center;
+        }
+
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            transition: transform 0.3s ease;
+        }
+
+        .social-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .social-btn i {
+            color: var(--light);
+            font-size: 1.2rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            opacity: 0.7;
+        }
+
+        .interactive-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            pointer-events: none;
+            mix-blend-mode: difference;
+            z-index: 999;
+            transition: transform 0.2s ease;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+            padding: 0.8rem 1.8rem;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .cta-button:hover {
+            background-color: var(--hover-accent-color);
+            color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        
+        /* Feature Sections */
+        .feature-section {
+            padding: 5rem 0;
+        }
+
+        .feature-section.alt-bg {
+            background-color: var(--surface-color); /* Fond alternatif pour varier */
+        }
+
+        .feature-section h3 {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .feature-section p {
+            text-align: center;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 3rem;
+            color: var(--secondary-color);
+        }
+
+        /* Formulaires */
+        form {
+            background-color: var(--surface-color);
+            padding: 2rem;
+            border-radius: 8px;
+            max-width: 600px;
+            margin: 2rem auto 0 auto;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--secondary-color);
+            font-weight: bold;
+        }
+
+        .form-group input[type="file"],
+        .form-group select {
+            display: block;
+            width: 100%;
+            padding: 0.8rem;
+            background-color: var(--background-color);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--primary-color);
+            font-size: 1rem;
+        }
+
+        /* Style pour le bouton de sélection de fichier */
+        .form-group input[type="file"]::file-selector-button {
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+            border: none;
+            padding: 0.6rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-right: 1rem; /* Espace entre le bouton et le texte du fichier */
+        }
+
+        .form-group input[type="file"]::file-selector-button:hover {
+            background-color: var(--hover-accent-color);
+        }
+
+        .form-group select {
+            appearance: none; /* Cache le style par défaut du select */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23bbbbbb' class='bi bi-chevron-down' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E"); /* Flèche SVG en gris clair */
+            background-repeat: no-repeat;
+            background-position: right 0.8rem center;
+            background-size: 16px 12px;
+            padding-right: 2.5rem; /* Espace pour la flèche */
+        }
+
+        form button[type="submit"] {
+            display: block;
+            width: 100%;
+            padding: 0.9rem;
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        form button[type="submit"]:hover {
+            background-color: var(--hover-accent-color);
+        }
+
+        /* Messages de statut */
+        .status-message {
+            margin-top: 1rem;
+            padding: 0.8rem;
+            border-radius: 4px;
+            font-weight: bold;
+            text-align: center;
+            display: none; /* Caché par défaut */
+        }
+        .status-message.success {
+            background-color: rgba(40, 167, 69, 0.2); /* Vert succès avec transparence */
+            color: var(--success-color);
+            display: block;
+        }
+        .status-message.error {
+            background-color: rgba(220, 53, 69, 0.2); /* Rouge erreur avec transparence */
+            color: var(--error-color);
+            display: block;
+        }
+        .status-message.loading {
+            background-color: rgba(0, 123, 255, 0.2); /* Bleu info avec transparence */
+            color: var(--accent-color);
+            display: block;
+        }
+
+        /* Boutons de téléchargement/visualisation */
+        .download-button {
+            display: block;
+            width: 100%;
+            padding: 0.9rem;
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            margin-top: 0.75rem;
+            text-align: center;
+        }
+
+        .download-button:hover {
+            background-color: var(--hover-accent-color);
+            transform: translateY(-2px);
+        }
+
+        .download-area {
+            margin-top: 1rem;
+        }
+
+        /* Styles pour les champs désactivés */
+        .form-group.disabled {
+            opacity: 0.6;
+            position: relative;
+        }
+
+        .form-group.disabled::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.1);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .form-group.disabled input {
+            pointer-events: none;
+        }
+
+        .error-message {
+            color: var(--error-color);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        /* Zone de résultat pour l'explication */
+        .explanation-result {
+            background-color: black;
+            padding: 3rem;
+            border-radius: 8px;
+            margin-top: 1rem; /* Diminution de la marge */
+            border: 1px solid var(--border-color);
+        }
+        .explanation-result h4 {
+            color: var(--accent-color);
+            margin-bottom: 0.5em;
+        }
+        .explanation-result p {
+            color: var(--secondary-color);
+            font-style: normal; /* Override l'italique initial */
+        }
+        .explanation-result p em { /* Style pour le message initial */
+            color: #888;
+        }
+
+        .cursor-trail {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--secondary);
+            pointer-events: none;
+            opacity: 0.5;
+            z-index: 998;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            h4 {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                
+            }
+            .hero {
+                height: auto;
+                padding: 4rem 0;
+            }
+            
+            nav ul {
+                gap: 1rem;
+            }
+            
+            .numeric-showcase {
+                height: 300px;
+            }
+        }
+        @media (max-width: 768px) {
+            header .container {
+                padding: 1.5rem 0.5rem;
+            }
+            nav ul {
+                gap: 9rem; /* Correction ici : réduit l'espacement pour éviter le scroll horizontal */
+            }
+            nav a {
+                font-size: 1rem;
+                padding: 0.2rem 0rem;
+                padding-left: 20px;
+                padding-right: 0px;
+                margin-right: 0.2rem;
+            }
+            .logout-btn {
+                font-size: 0.8rem;
+                padding: 0.5rem 0.7rem;
+                margin-left: 0rem;
+                margin-right: 0rem;
+            }
+            .hide-mobile {
+                display: none !important;
+            }
+            
+            header .logo {
+                display: none;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="interactive-cursor"></div>
+    <canvas id="particle-canvas"></canvas>
+    <header data-aos="fade-down">
+        <div class="container">
+            <div class="logo" style="max-width: 200px;">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Saména Logo" style="width: 80%; height: auto;">
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="/">Accueil</a></li>
+                    <li class="hide-mobile"><a href="/compta">Comptabilité IA</a></li>
+                    <li class="hide-mobile"><a href="/explain">Explication Documents</a></li>
+                    <li><a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        
+        <div style="padding: 30px;"></div>
+
+        <section id="doc-explainer" class="feature-section">
+             <div class="container">
+                <h3 data-aos="fade-left">Explication Automatique de Documents Complexes</h3>
+                <p data-aos="fade-left" data-aos-delay="100">Ne perdez plus de temps à déchiffrer des contrats ou des textes juridiques. Saména les simplifie pour vous.</p>
+
+                <form id="doc-form" data-aos="fade-up" data-aos-delay="200">
+                    <div class="form-group">
+                        <label for="doc-file">Téléversez votre document (PDF) :</label>
+                        <input type="file" id="doc-file" name="document_file" accept=".pdf" required>
+                    </div>
+                    <button type="submit">Demander une Explication</button>
+                     <div class="status-message" id="doc-status"></div>
+                </form>
+                <div style="padding: 30px;"></div>
+
+                <div id="explanation-output" class="explanation-result" data-aos="fade-up" data-aos-delay="300">
+                    <h4>Explication par Saména :</h4>
+                    <p><em>Saména est en attente d'un fichier à expliquer...</em></p>
+                    <video autoplay loop muted playsinline style="width: 100%; max-width: 100px; margin: 20px auto; display: block;">
+                        <source src="{{ url_for('static', filename='images/bouncing.mp4') }}" type="video/mp4">
+                        Votre navigateur ne prend pas en charge la lecture de vidéos.
+                    </video>
+                </div>
+                <canvas id="data-visualization"></canvas>
+            </div>
+
+            <div style="padding: 80px;"></div>
+            <div class="container" data-aos="fade-up" data-aos-delay="400">
+                <h4>Contactez-nous</h4>
+                <p>Pour toute question ou assistance, n'hésitez pas à nous contacter à <a href="mailto:samena.entreprise@gmail.com">samena.entreprise@gmail.com</a>.</p>
+            </div>
+            <div style="padding: 0px;" ></div>
+            <div class="container" data-aos="fade-up" data-aos-delay="400">
+                <p>&copy; 2025 Saména. Tous droits réservés.</p>
+            </div>
+    
+        </section>
+        
+    </main>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        const cursor = document.createElement('div');
+        cursor.classList.add('interactive-cursor');
+        document.body.appendChild(cursor);
+
+        let cursorTrails = [];
+        const trailCount = 10;
+
+        for (let i = 0; i < trailCount; i++) {
+            const trail = document.createElement('div');
+            trail.classList.add('cursor-trail');
+            document.body.appendChild(trail);
+            cursorTrails.push(trail);
+        }
+
+        let mouseX = 0;
+        let mouseY = 0;
+        let trailPositions = Array(trailCount).fill().map(() => ({ x: 0, y: 0 }));
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            cursor.style.transform = `translate(${mouseX - 10}px, ${mouseY - 10}px)`;
+            
+            // Hover effects for links
+            const target = e.target;
+            if (target.tagName === 'A' || target.tagName === 'BUTTON') {
+                cursor.style.transform = `translate(${mouseX - 10}px, ${mouseY - 10}px) scale(1.5)`;
+            }
+        });
+
+        function updateTrails() {
+            // Shift positions in the array
+            for (let i = trailCount - 1; i > 0; i--) {
+                trailPositions[i] = { ...trailPositions[i-1] };
+            }
+            
+            // Set the first position to current mouse
+            trailPositions[0] = { x: mouseX, y: mouseY };
+            
+            // Update DOM elements
+            cursorTrails.forEach((trail, index) => {
+                const pos = trailPositions[index];
+                if (pos) {
+                    trail.style.left = (pos.x - 5) + 'px';
+                    trail.style.top = (pos.y - 5) + 'px';
+                    trail.style.opacity = 1 - (index / trailCount);
+                }
+            });
+            
+            requestAnimationFrame(updateTrails);
+        }
+        
+        updateTrails();
+
+        // Particle background
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const particles = [];
+        const particleCount = 100;
+        
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 3 + 1;
+                this.speedX = Math.random() * 1 - 0.5;
+                this.speedY = Math.random() * 1 - 0.5;
+                this.color = Math.random() > 0.5 ? '#8a4ce6' : '#42c0ff';
+                this.opacity = Math.random() * 0.5 + 0.2;
+            }
+            
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                
+                if (this.x > canvas.width || this.x < 0) {
+                    this.speedX = -this.speedX;
+                }
+                
+                if (this.y > canvas.height || this.y < 0) {
+                    this.speedY = -this.speedY;
+                }
+                
+                // Mouse interaction
+                const dx = mouseX - this.x;
+                const dy = mouseY - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < 100) {
+                    const angle = Math.atan2(dy, dx);
+                    this.x -= Math.cos(angle) * 1;
+                    this.y -= Math.sin(angle) * 1;
+                }
+            }
+            
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.opacity;
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+        }
+        
+        function initParticles() {
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+        
+        function connectParticles() {
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 150) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(66, 192, 255, ${0.1 * (1 - distance/150)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+        
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            for (const particle of particles) {
+                particle.update();
+                particle.draw();
+            }
+            
+            connectParticles();
+            requestAnimationFrame(animate);
+        }
+        
+        initParticles();
+        animate();
+        
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // Data visualization canvas
+        const dataCanvas = document.getElementById('data-visualization');
+        const dataCtx = dataCanvas.getContext('2d');
+        
+        dataCanvas.width = dataCanvas.parentElement.clientWidth;
+        dataCanvas.height = dataCanvas.parentElement.clientHeight;
+        
+        // Generate random data points
+        const dataPoints = Array.from({ length: 20 }, () => Math.random());
+        const dataColors = ['#8a4ce6', '#42c0ff'];
+        
+        let time = 0;
+        let hoverPoint = -1;
+        
+        dataCanvas.addEventListener('mousemove', (e) => {
+            const rect = dataCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const width = dataCanvas.width;
+            
+            // Find closest point
+            const index = Math.round((x / width) * (dataPoints.length - 1));
+            hoverPoint = index >= 0 && index < dataPoints.length ? index : -1;
+            
+            // Change cursor style
+            dataCanvas.style.cursor = hoverPoint >= 0 ? 'pointer' : 'default';
+        });
+        
+        dataCanvas.addEventListener('mouseleave', () => {
+            hoverPoint = -1;
+        });
+        
+        drawDataVisualization();
+        
+        window.addEventListener('resize', () => {
+            dataCanvas.width = dataCanvas.parentElement.clientWidth;
+            dataCanvas.height = dataCanvas.parentElement.clientHeight;
+        });
+    </script>
+</body>
+</html>
