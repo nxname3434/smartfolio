@@ -4,8 +4,6 @@ Smartfolio est un SaaS qui automatise la création de CV numériques personnalis
 
 ![apercu de la landing page](templates/portfolio_landing.png)
 
-![exemple d'un portfolio généré sur mesure](templates/portfolio_example.png)
-
 
 ## Contenu
 
@@ -13,6 +11,10 @@ Smartfolio est un SaaS qui automatise la création de CV numériques personnalis
 - Backend Flask reduit (`main.py`) avec des réponses factices afin de conserver les parcours utilisateurs.
 - Deux captures (`templates/portfolio_landing.png` et `templates/portfolio_example.png`) illustrent la page d'accueil et un exemple du produit géneré.
 - TikTok: [@smartfolio.ai](https://www.tiktok.com/@smartfolio.ai)
+
+## Exemple d'un portfolio généré sur mesure
+![exemple d'un portfolio généré sur mesure](templates/portfolio_example.png)
+
 
 ## Demarrage rapide
 
