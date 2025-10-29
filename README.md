@@ -2,6 +2,11 @@
 
 Smartfolio est un SaaS qui automatise la création de CV numériques personnalisés pour les développeurs et les étudiants en informatique. Ce dépot open-source propose la vitrine web historique ainsi qu'un backend Flask minimal permettant de parcourir l'interface sans connecter les services propriétaires.
 
+![apercu de la landing page](templates/portfolio_landing.png)
+
+![exemple d'un portfolio généré sur mesure](templates/portfolio_example.png)
+
+
 ## Contenu
 
 - Frontend complet (gabarits HTML, CSS, JS) provenant de l'application originale.
